@@ -1,0 +1,25 @@
+import scipy.signal as sig
+
+def preprocess(data):
+    """Preprocess audio data for speech recognition.
+    
+    Parameters
+    ----------
+    data: ndarray
+        The raw audio data.
+    
+    Returns
+    -------
+    ndarray
+        The preprocessed audio data.
+    """
+    # Convert the data to a spectrogram
+    f, t, spectrogram = sig.spectrogram(data, fs=16000)
+    
+    # Filter out noise
+    spectrogram = sig.medfilt(spectrogram, kernel_size=3)
+    
+    # Normalize the data
+    spectrogram = (spectrogram - spectrogram.mean()) / spectrogram.std()
+    
+    return spectrogram
