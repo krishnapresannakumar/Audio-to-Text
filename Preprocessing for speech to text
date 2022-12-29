@@ -1,18 +1,9 @@
 import scipy.signal as sig
+from scipy.fftpack import dct
 
 def preprocess(data):
     """Preprocess audio data for speech recognition.
     
-    Parameters
-    ----------
-    data: ndarray
-        The raw audio data.
-    
-    Returns
-    -------
-    ndarray
-        The preprocessed audio data.
-    """
     # Convert the data to a spectrogram
     f, t, spectrogram = sig.spectrogram(data, fs=16000)
     
@@ -21,5 +12,27 @@ def preprocess(data):
     
     # Normalize the data
     spectrogram = (spectrogram - spectrogram.mean()) / spectrogram.std()
+    import numpy as np
+
+    # Filter out noise
+    spectrogram = lowpass_filter(spectrogram, cutoff=2000)
+    
+    # Normalize the data
+    spectrogram = (spectrogram - np.mean(spectrogram)) / np.std(spectrogram)
     
     return spectrogram
+
+def lowpass_filter(spectrogram, cutoff=2000):
+    """Apply a lowpass filter to the spectrogram.
+    
+
+    # Create a lowpass filter
+    filter_ = np.ones(spectrogram.shape)
+    filter_[cutoff:] = 0
+    
+    # Apply the filter to the spectrogram
+    spectrogram = spectrogram * filter_
+    
+    return spectrogram
+
+
